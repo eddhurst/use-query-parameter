@@ -61,6 +61,17 @@ const useQueryParameter : UseQueryParameter = (name, defaultValue = '', mode = '
     // Handle the setState api
     let normalizedNextVal = '';
     if (typeof nextVal === 'function') {
+      // get the latest state from the URL
+      const url = new URL(window.location.href);
+      const urlSearch = url.searchParams;
+      const val = urlSearch.get(name);
+      const normalizedVal = val === null ? '' : val;
+
+      // if the state doesn't exist yet, or has mutated elsewhere on the page
+      if (normalizedVal !== previousParameterValueRef.current) {
+        previousParameterValueRef.current = normalizedVal || defaultValue;
+      }
+
       normalizedNextVal = nextVal(previousParameterValueRef.current);
     } else {
       normalizedNextVal = nextVal;
